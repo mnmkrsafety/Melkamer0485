@@ -42,23 +42,26 @@
     </div>
 
     <script>
-        // Laad meldingen uit localStorage bij het openen van de pagina
-        document.addEventListener("DOMContentLoaded", function() {
-            const savedNotifications = JSON.parse(localStorage.getItem("notifications")) || [];
-            savedNotifications.forEach(notification => addNotificationToList(notification));
-        });
+        const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mnmkrsafety/info-cuijk/main/meldingen.json";
+
+        // Laadt meldingen van GitHub
+        async function loadNotifications() {
+            try {
+                let response = await fetch(GITHUB_JSON_URL);
+                let data = await response.json();
+                document.getElementById("notification-list").innerHTML = "";
+                data.forEach(notification => addNotificationToList(notification));
+            } catch (error) {
+                console.error("Fout bij laden meldingen:", error);
+            }
+        }
 
         function sendNotification() {
             const message = document.getElementById('message').value;
             if (message) {
                 const notification = ${new Date().toLocaleString()}: ${message};
                 addNotificationToList(notification);
-
-                // Opslaan in localStorage
-                const savedNotifications = JSON.parse(localStorage.getItem("notifications")) || [];
-                savedNotifications.push(notification);
-                localStorage.setItem("notifications", JSON.stringify(savedNotifications));
-
+                alert("Melding toegevoegd! Voeg deze handmatig toe aan 'meldingen.json' op GitHub.");
                 document.getElementById('message').value = '';
             }
         }
@@ -69,6 +72,9 @@
             listItem.textContent = notification;
             document.getElementById('notification-list').appendChild(listItem);
         }
+
+        // Laad meldingen bij openen pagina
+        loadNotifications();
     </script>
 </body>
 </html>
