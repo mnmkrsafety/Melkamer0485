@@ -41,40 +41,28 @@
         <ul id="notification-list"></ul>
     </div>
 
-    <script>
-        const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mnmkrsafety/info-cuijk/main/meldingen.json";
+   <script>
+async function loadMeldingen() {
+    try {
+        const response = await fetch("https://raw.githubusercontent.com/mnmkrsafety/Melkamer0485/main/Meldingen.json");
+        if (!response.ok) throw new Error("Kan meldingen niet laden");
 
-        // Laadt meldingen van GitHub
-        async function loadNotifications() {
-            try {
-                let response = await fetch(GITHUB_JSON_URL);
-                let data = await response.json();
-                document.getElementById("notification-list").innerHTML = "";
-                data.forEach(notification => addNotificationToList(notification));
-            } catch (error) {
-                console.error("Fout bij laden meldingen:", error);
-            }
-        }
+        const data = await response.json();
+        const list = document.getElementById("notification-list");
 
-        function sendNotification() {
-            const message = document.getElementById('message').value;
-            if (message) {
-                const notification = ${new Date().toLocaleString()}: ${message};
-                addNotificationToList(notification);
-                alert("Melding toegevoegd! Voeg deze handmatig toe aan 'meldingen.json' op GitHub.");
-                document.getElementById('message').value = '';
-            }
-        }
+        list.innerHTML = ""; // Leeg de lijst voor nieuwe meldingen
+        data.forEach(melding => {
+            const listItem = document.createElement("li");
+            listItem.textContent = melding;
+            list.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error(error);
+        document.getElementById("notification-list").innerHTML = "<li>Kan meldingen niet laden.</li>";
+    }
+}
 
-        function addNotificationToList(notification) {
-            const listItem = document.createElement('li');
-            listItem.className = "notification-item";
-            listItem.textContent = notification;
-            document.getElementById('notification-list').appendChild(listItem);
-        }
-
-        // Laad meldingen bij openen pagina
-        loadNotifications();
-    </script>
+loadMeldingen();
+</script>
 </body>
 </html>
